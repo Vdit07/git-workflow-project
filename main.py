@@ -1,17 +1,34 @@
-import seaborn as sns
 import pandas as pd
-
-# Load Penguins dataset
-penguins = sns.load_dataset("penguins")
-print(penguins.head())
-
 from sklearn.model_selection import train_test_split
-import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+from xgboost import XGBClassifier
 
-df = pd.read_csv("https://raw.githubusercontent.com/mwaskom/seaborn-data/master/penguins.csv")
-df = df.dropna()
+# Load penguins dataset from seaborn
+import seaborn as sns
+penguins = sns.load_dataset("penguins")
 
-X = df.drop("species", axis=1)
-y = df["species"]
+# Drop rows with missing values
+penguins = penguins.dropna()
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Select features and target
+X = penguins.drop(columns=["species"])
+y = penguins["species"]
+
+# Convert categorical features to numeric (like 'sex' and 'island')
+X = pd.get_dummies(X, drop_first=True)
+
+# Encode target labels (y)
+le = LabelEncoder()
+y_encoded = le.fit_transform(y)
+
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, test_size=0.2, random_state=42)
+
+# Cre
+
+from xgboost import XGBClassifier
+model = XGBClassifier()  # No need for use_label_encoder=False anymore
+
+model.fit(X_train,y_train)
+
+
